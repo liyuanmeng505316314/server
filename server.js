@@ -20,13 +20,28 @@ var server = http.createServer(function(request, response){
   /******** 从这里开始看，上面不要看 ************/
 
   console.log('有个傻子发请求过来啦！路径（带查询参数）为：' + pathWithQuery)
-   
     response.statusCode = 200
-    response.setHeader('Content-Type', 'text/html;charset=utf-8')
-    const x=path
-    response.write(fs.readFileSync(`./public${x}`))
+    path==='/'?'/index.html':path
+    const suffix =path.substring(path.lastIndexOf('.')) //suffix是后缀的单纯
+    const fileTypes={
+      '.html':'text/html',
+      '.css':'text/css',
+      '.js':'text/javascript',
+      '.png':'img/png',
+      '.jpeg':'image/jpeg',
+      '.jpg':'image/jpg',
+    }
+    response.setHeader('Content-Type', `${fileTypes[suffix]||'text/html'};charset=utf-8`)
+    let x
+    try{
+      x=fs.readFileSync(`./public${path}`)
+    }catch(error){
+      x='文件不存在哦,骚年'
+      response.statusCode=404
+    }
+    response.write(x)
     response.end()
-
+   
   /******** 代码结束，下面不要看 ************/
 })
 
